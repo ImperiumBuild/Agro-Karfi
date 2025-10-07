@@ -245,7 +245,7 @@ const Mapping = () => {
     }
     try {
       setLoading(true); // start loading
-      const res = await fetch("http://127.0.0.1:8000/calculate", {
+      const res = await fetch("https://agro-karfi.onrender.com/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ polygon }),
