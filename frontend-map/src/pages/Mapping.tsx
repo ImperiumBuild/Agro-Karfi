@@ -31,6 +31,93 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
+// ✅ Controls
+const Controls = ({
+  query,
+  setQuery,
+  manualMode,
+  drawing,
+  polygon,
+  handleSearch,
+  handleLocate,
+  handleDrawPolygon,
+  handleFinishDrawing,
+  handleCalculate,
+  handleClearPolygon,
+  loading,
+}: any) => (
+  <div className="space-y-3">
+    <div className="flex space-x-2">
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search Nigerian place..."
+        className="flex-1 p-2 rounded text-black"
+        disabled={loading}
+      />
+      <button
+        onClick={handleSearch}
+        className="bg-blue-500 px-3 rounded hover:bg-blue-600 disabled:opacity-50"
+        disabled={loading}
+      >
+        🔍
+      </button>
+    </div>
+
+    {manualMode && (
+      <div className="text-yellow-300 text-sm">
+        Could not auto-detect. Use search or click map.
+      </div>
+    )}
+
+    <button
+      onClick={handleLocate}
+      className="p-2 rounded-lg w-full bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50"
+      disabled={loading}
+    >
+      📍 Locate Me
+    </button>
+
+    {drawing ? (
+      <button
+        onClick={handleFinishDrawing}
+        className="p-2 rounded-lg w-full bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50"
+        disabled={loading}
+      >
+        🛑 Finish Drawing ({polygon.length} points)
+      </button>
+    ) : (
+      <button
+        onClick={handleDrawPolygon}
+        className="p-2 rounded-lg w-full bg-green-500 hover:bg-green-600 disabled:opacity-50"
+        disabled={loading}
+      >
+        ✏️ Draw Polygon
+      </button>
+    )}
+
+    {polygon.length >= 3 && !drawing && (
+      <>
+        <button
+          onClick={handleCalculate}
+          className="bg-teal-500 hover:bg-teal-600 p-2 rounded-lg w-full disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "⏳ Calculating..." : "⚡ Calculate"}
+        </button>
+        <button
+          onClick={handleClearPolygon}
+          className="bg-red-500 hover:bg-red-600 p-2 rounded-lg w-full disabled:opacity-50"
+          disabled={loading}
+        >
+          ❌ Clear Polygon
+        </button>
+      </>
+    )}
+  </div>
+);
+
 const Mapping = () => {
   const [map, setMap] = useState<Map | null>(null);
   const [position, setPosition] = useState<[number, number] | null>(null);
@@ -40,6 +127,7 @@ const Mapping = () => {
   const [manualMode, setManualMode] = useState(false);
   const [initialFly, setInitialFly] = useState(false);
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Loading state
   const navigate = useNavigate();
 
   // ✅ Geolocation
@@ -68,12 +156,12 @@ const Mapping = () => {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [map, initialFly]);
 
-  // ✅ Search address (Nigeria only)
+  // ✅ Search address (restricted to Nigeria)
   const handleSearch = async () => {
     if (!query) return;
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=NG&q=${encodeURIComponent(
+        `https://nominatim.openstreetmap.org/search?countrycodes=NG&format=json&q=${encodeURIComponent(
           query
         )}`
       );
@@ -149,13 +237,15 @@ const Mapping = () => {
     setDrawing(false);
   };
 
+  // ✅ Calculate with loading
   const handleCalculate = async () => {
     if (polygon.length < 3) {
       alert("Polygon must have at least 3 points");
       return;
     }
     try {
-      const res = await fetch("https://10.201.245.196:8000/calculate", {
+      setLoading(true); // start loading
+      const res = await fetch("http://127.0.0.1:8000/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ polygon }),
@@ -164,91 +254,42 @@ const Mapping = () => {
       navigate("/dashboard", { state: { apiResult: data } });
     } catch (err) {
       alert("Backend error");
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
-  const Controls = () => (
-    <div className="space-y-3">
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search Nigerian place..."
-          className="flex-1 p-2 rounded text-black"
-        />
-        <button
-          onClick={handleSearch}
-          className="bg-blue-500 px-3 rounded hover:bg-blue-600"
-        >
-          🔍
-        </button>
-      </div>
-
-      {manualMode && (
-        <div className="text-yellow-300 text-sm">
-          Could not auto-detect. Use search or click map.
-        </div>
-      )}
-
-      <button
-        onClick={handleLocate}
-        className="p-2 rounded-lg w-full bg-indigo-500 hover:bg-indigo-600"
-      >
-        📍 Locate Me
-      </button>
-
-      {drawing ? (
-        <button
-          onClick={handleFinishDrawing}
-          className="p-2 rounded-lg w-full bg-yellow-500 hover:bg-yellow-600"
-        >
-          🛑 Finish Drawing ({polygon.length} points)
-        </button>
-      ) : (
-        <button
-          onClick={handleDrawPolygon}
-          className="p-2 rounded-lg w-full bg-green-500 hover:bg-green-600"
-        >
-          ✏️ Draw Polygon
-        </button>
-      )}
-
-      {polygon.length >= 3 && !drawing && (
-        <>
-          <button
-            onClick={handleCalculate}
-            className="bg-teal-500 hover:bg-teal-600 p-2 rounded-lg w-full"
-          >
-            ⚡ Calculate
-          </button>
-          <button
-            onClick={handleClearPolygon}
-            className="bg-red-500 hover:bg-red-600 p-2 rounded-lg w-full"
-          >
-            ❌ Clear Polygon
-          </button>
-        </>
-      )}
-    </div>
-  );
-
   return (
-    <div className="h-screen w-screen flex">
+    <div className="h-screen w-screen flex relative">
+      {/* Sidebar (desktop only) */}
       <div className="hidden md:flex w-60 bg-gray-800 text-white p-4 flex-col">
         <h2 className="text-lg font-bold mb-4">Controls</h2>
-        <Controls />
+        <Controls
+          query={query}
+          setQuery={setQuery}
+          manualMode={manualMode}
+          drawing={drawing}
+          polygon={polygon}
+          handleSearch={handleSearch}
+          handleLocate={handleLocate}
+          handleDrawPolygon={handleDrawPolygon}
+          handleFinishDrawing={handleFinishDrawing}
+          handleCalculate={handleCalculate}
+          handleClearPolygon={handleClearPolygon}
+          loading={loading}
+        />
       </div>
 
+      {/* Map */}
       <div className="flex-1 relative">
         <MapContainer
-          center={position || [6.5244, 3.3792]} // Lagos default
+          center={position || [6.5244, 3.3792]}
           zoom={15}
           maxZoom={19}
           style={{ height: "100%", width: "100%" }}
           className="z-0"
         >
-          {/* ✅ Nigeria-friendly basemap */}
+          {/* ✅ Better tile layer for Nigeria */}
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
@@ -269,6 +310,7 @@ const Mapping = () => {
           <MapWithSetup setMap={setMap} />
         </MapContainer>
 
+        {/* Mobile floating controls */}
         <div
           className="
             md:hidden absolute bottom-4 left-1/2 -translate-x-1/2
@@ -277,8 +319,30 @@ const Mapping = () => {
             max-h-[50vh] overflow-y-auto
           "
         >
-          <Controls />
+          <Controls
+            query={query}
+            setQuery={setQuery}
+            manualMode={manualMode}
+            drawing={drawing}
+            polygon={polygon}
+            handleSearch={handleSearch}
+            handleLocate={handleLocate}
+            handleDrawPolygon={handleDrawPolygon}
+            handleFinishDrawing={handleFinishDrawing}
+            handleCalculate={handleCalculate}
+            handleClearPolygon={handleClearPolygon}
+            loading={loading}
+          />
         </div>
+
+        {/* ✅ Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="text-white text-lg animate-pulse">
+              ⏳ Processing your polygon...
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
