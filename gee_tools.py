@@ -1,10 +1,6 @@
 import ee
 import requests
 
-# ==============================================================
-#  BACKUP DATA SOURCES
-# ==============================================================
-
 def get_soil_data_backup(lat: float, lon: float) -> dict:
     """Backup: ISRIC REST API for topsoil pH and organic carbon."""
     try:
@@ -51,9 +47,7 @@ def get_climatology_data_backup(lat: float, lon: float) -> dict:
         return {"avg_temp_c": 27.0, "rainfall_total_mm": 1200, "source": "default"}
 
 
-# ==============================================================
-#  SATELLITE IMAGERY (Sentinel-2 True Color)
-# ==============================================================
+
 
 def get_satellite_image_url(polygon_coords: list) -> str:
     """Get Sentinel-2 True Color image (auto-buffer for small areas)."""
@@ -91,9 +85,7 @@ def get_satellite_image_url(polygon_coords: list) -> str:
         return "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
 
 
-# ==============================================================
-#  GEE-BASED DATA EXTRACTION (with guaranteed values)
-# ==============================================================
+
 
 def get_soil_data(polygon_coords: list, lat: float, lon: float) -> dict:
     """Soil pH and organic carbon (%), with fallback."""

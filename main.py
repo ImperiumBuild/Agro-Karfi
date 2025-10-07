@@ -85,11 +85,11 @@ def fetch_backup_soil_data(lat, lon):
     except:
         return {"soil_pH": 6.5}
 
-# 🆕 Simple NDVI fallback
+# Simple NDVI fallback
 def fetch_backup_ndvi(lat, lon):
     return {"ndvi_mean": 0.45}  # typical vegetative NDVI for fallback
 
-# 🆕 Simple soil carbon fallback
+# Simple soil carbon fallback
 def fetch_backup_soil_carbon(lat, lon):
     return {"soil_org_carbon_pct": 1.2}  # default avg SOC
 
@@ -114,7 +114,7 @@ async def calculate_geospatial_data(request: PolygonRequest):
             "status": "success",
             "area_sq_m": area_sq_m,
             "polygon_bounds": polygon_coords,
-            **data  # 🔥 Merges all returned data (climate, soil, ndvi, etc.)
+            **data  
         }
 
     except Exception as e:
@@ -144,7 +144,7 @@ def process_geospatial_data(ee_polygon, polygon_coords, lat, lon):
         avg_temp = climatology.get("avg_temp_c", None)
         rainfall = climatology.get("rainfall_total_mm", None)
 
-        # ✅ Fallback handling for missing/NA values
+        # Fallback handling for missing/NA values
         if not climatology or avg_temp is None or rainfall is None:
             climatology = fetch_backup_weather_data(lat, lon)
             avg_temp = climatology["avg_temp_c"]
@@ -227,6 +227,6 @@ async def predict_optimal_crop(payload: ModelFeatures):
 
     except Exception as e:
         import traceback
-        traceback.print_exc()  # 🧠 print the full stack trace
+        traceback.print_exc()  # print the full stack trace
         raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
 

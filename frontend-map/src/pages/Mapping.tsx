@@ -31,7 +31,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// ✅ Controls
+// Controls
 const Controls = ({
   query,
   setQuery,
@@ -130,7 +130,7 @@ const Mapping = () => {
   const [loading, setLoading] = useState(false); // ✅ Loading state
   const navigate = useNavigate();
 
-  // ✅ Geolocation
+  // Geolocation
   useEffect(() => {
     if (!navigator.geolocation) {
       setManualMode(true);
@@ -156,7 +156,7 @@ const Mapping = () => {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [map, initialFly]);
 
-  // ✅ Search address (restricted to Nigeria)
+  // Search address (restricted to Nigeria)
   const handleSearch = async () => {
     if (!query) return;
     try {
@@ -181,7 +181,7 @@ const Mapping = () => {
     }
   };
 
-  // ✅ Locate Me button
+  // Locate Me button
   const handleLocate = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported");
@@ -202,7 +202,7 @@ const Mapping = () => {
     );
   };
 
-  // ✅ Polygon drawing
+  // Polygon drawing
   const handleDrawPolygon = () => {
     if (!map) return;
     map.off("click");
@@ -237,7 +237,7 @@ const Mapping = () => {
     setDrawing(false);
   };
 
-  // ✅ Calculate with loading
+  // Calculate with loading
   const handleCalculate = async () => {
     if (polygon.length < 3) {
       alert("Polygon must have at least 3 points");
@@ -289,7 +289,7 @@ const Mapping = () => {
           style={{ height: "100%", width: "100%" }}
           className="z-0"
         >
-          {/* ✅ Better tile layer for Nigeria */}
+          {/* Better tile layer for Nigeria */}
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
@@ -335,7 +335,7 @@ const Mapping = () => {
           />
         </div>
 
-        {/* ✅ Loading overlay */}
+        {/* Loading overlay */}
         {loading && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="text-white text-lg animate-pulse">
