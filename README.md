@@ -38,3 +38,16 @@ This analysis, catered to the user's location, consists of average temperature o
 - [FARA Africa](https://faraafrica.org/2024/05/08/addressing-declining-soil-fertility-in-africa-amid-population-surge/)
 - [Food and Agriculture Organization](https://www.fao.org/fileadmin/user_upload/GSP/docs/WS_managinglivingsoils/Status_Soil_Management_Nigeria_Ojuola.pdf)
 - [The Nation Newspaper](https://thenationonlineng.net/nigerias-prosperity-inseparable-from-future-of-northern-nigeria-tinubu/)
+
+
+
+### Running the Application Locally:
+To run this application locally :<br> 
+* Use `git clone https://github.com/ImperiumBuild/Agro-Karfi.git` to clone the repository locally.
+* Then `cd Agro-Karfi` to enter into the project folder.
+* Run `pip install requirements.txt` to install the modules.
+* Create a .env file and the neccesary variables can be given to you by any of the team members.
+* Run `uvicorn main:app --reload` to run the local server.
+* Run `cd frontend-map` to change directory to the frontend part of the code.
+* Run `npm install` then `npm run dev` to start the frontend server.
+* The link is usually `http://localhost:3000` depending on the port available on your system.
