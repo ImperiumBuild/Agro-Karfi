@@ -170,7 +170,7 @@ const DashboardPage: React.FC = () => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch("https://agro-karfi.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -260,7 +260,7 @@ const DashboardPage: React.FC = () => {
           irrigated_area_ha: irrigated,
         };
 
-        const response = await fetch("http://127.0.0.1:8000/predict", {
+        const response = await fetch("https://agro-karfi.onrender.com/predict", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
